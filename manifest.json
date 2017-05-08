@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "NoteTakerExtention",
+  "description": "This extension saves notes to a database for any url",
+  "version": "1.0",
+
+  "browser_action": {
+    "icons": ["yummypanguin.png"],
+    "default_icon": "yummypanguin.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "css": ["style.css"],
+      "js": ["jquery-3.2.1.min.js", "background.js"],
+      "matches": [ "http://*/*", "https://*/*"]
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "<all_urls>",
+    "http://*/*",
+    "http://127.0.0.1/*"
+  ]
+}
