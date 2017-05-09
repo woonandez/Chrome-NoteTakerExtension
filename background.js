@@ -3,9 +3,9 @@ $(document).ready(function() {
 
   //Get hightlighted text from browser
   chrome.tabs.executeScript( {
-      code: "window.getSelection().toString();"
+    code: "window.getSelection().toString();"
   }, function(selection) {
-     text = selection[0];
+    text = selection[0];
   });
   
   // $.ajax({
