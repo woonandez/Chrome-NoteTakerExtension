@@ -1,9 +1,10 @@
 $(document).ready(function() {
+  
 
-  document.addEventListener("DOMContentLoaded",function () {
-    chrome.tabs.insertCSS(null, {file:"highlight.css"});
+  document.addEventListener("DOMContentLoaded", () => {
     chrome.tabs.executeScript(null, {file: "jquery-3.2.1.min.js"});
     chrome.tabs.executeScript(null, {file: "jquery.highlight.js"});
+    chrome.tabs.insertCSS(null, {file:"highlight.css"});
   });
 
   function fetch () {
@@ -12,7 +13,7 @@ $(document).ready(function() {
       type: 'GET',
       success: (data) => {
         //Render the dropdown
-        console.log(data)
+        console.log(data);
         $('#dropdown').append($("<option/>", {
           label: "Pin 1",
           value: 0,
@@ -38,7 +39,7 @@ $(document).ready(function() {
 
     //Get hightlighted text from browser
     chrome.tabs.executeScript({
-      code: "$('body').highlight('Example'); window.getSelection().toString();"
+      code: "$('body').highlight('Hello'); window.getSelection().toString();"
     }, (selection) => {
     
       var text = selection[0];
