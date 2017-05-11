@@ -13,12 +13,14 @@
   "content_scripts": [
     {
       "css": ["style.css"],
-      "js": ["jquery-3.2.1.min.js", "background.js"]
+      "js": ["jquery-3.2.1.min.js", "jquery.highlight.js", "background.js"],
+      "matches": ["http://*/", "https://*/"]
     }
   ],
   "permissions": [
     "activeTab",
-    "http://*/*",
+    "tabs",
+    "http://*/",
     "http://127.0.0.1/*"
   ]
 }
