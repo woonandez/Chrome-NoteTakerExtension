@@ -11,16 +11,15 @@
     "default_popup": "popup.html"
   },
   "content_scripts": [
-    {
-      "css": ["style.css"],
-      "js": ["jquery-3.2.1.min.js", "jquery.highlight.js", "background.js"],
-      "matches": ["http://*/*", "https://*/*"]
-    }
+    // {
+    //   "js": ["jquery-3.2.1.min.js", "jquery.highlight.js", "background.js"],
+    //   "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+    //   "run_at": "document_start"
+    // }
   ],
   "permissions": [
     "activeTab",
     "tabs",
-    "http://*/*",
-    "http://127.0.0.1/*"
+    "<all_urls>"
   ]
 }
