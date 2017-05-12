@@ -2,6 +2,14 @@ select {
   margin: 10px;
 }
 
-.highlight{
-  background-color: yellow;
+body {
+  min-width: 400px;
+}
+
+#button{
+  float: left
+}
+
+label {
+    display: inline;
 }
