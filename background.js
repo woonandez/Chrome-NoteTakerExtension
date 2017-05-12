@@ -45,39 +45,6 @@ function renderOption(data) {
         });
       }
     });
-  };
-
-  //get current tab url
-  $("#button").on("click", function(){
-    var currentUri;
-
-    chrome.tabs.getSelected(null, (tab) => {
-      currentUri = tab.url;
-    });
-
-    //Get hightlighted text from browser
-    chrome.tabs.executeScript({
-      code: "$('body').highlight('Hello'); window.getSelection().toString();"
-    }, (selection) => {
-    
-      var text = selection[0];
-      var fake = {name: 'Kevin', uri: currentUri, note: text};
-      console.log(JSON.stringify(fake));
-
-      $.ajax({
-        type: 'POST',
-        contentType: 'application/json',
-        url: 'http://127.0.0.1:3003/api/users/notes',
-        data: JSON.stringify(fake),
-        success: (data) => {
-          console.log('SUCCESS!');
-          fetch();
-        },
-        error: (data) => {
-          console.log('Did not receive:' + data);
-        }
-      });
-    });
   });
 }
 
