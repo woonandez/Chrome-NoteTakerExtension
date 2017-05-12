@@ -45,7 +45,7 @@ function renderOption(data) {
         });
       }
     });
-  };
+  });
 
   //get current tab url
   $("#button").on("click", function(){
