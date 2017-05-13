@@ -4,7 +4,7 @@ select {
 
 html, body{
   margin: 0px;
-  min-width: 400px;
+  min-width: 300px;
 }
 
 *{
@@ -73,39 +73,16 @@ html, body{
   }
 }
 
-.floater-profile {
-  position: absolute;
-  text-align: center;
-  width: 100%;
-  bottom: 0px;
-  left: 0px;
-}
-
-.user-info {
-  position: relative;
-  z-index: 1;
-}
-
-.floater-background {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  background: #343434;
-  opacity: 0.7;
-}
-
 .logout-button {
   margin-bottom: 15px !important;
 }
 
-.floater-profile * {
-  color: #fff;
+.login-button {
+  margin: 10px !important;
 }
 
-.nickname::before {
-  content: '@'
+.floater-profile * {
+  color: #fff;
 }
 
 #button{
