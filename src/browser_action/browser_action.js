@@ -1,13 +1,82 @@
 var user;
 var userID;
+var allNotes;
+
+function optionChange () {
+  $('#dropdown').change(function() {
+    var index = $(this).val();
+    var $currentOption = $('#dropdown option[value=' + index + ']');
+    var text = $currentOption.text();
+
+    if($currentOption.hasClass('selected')) {
+      $currentOption.removeClass('selected');
+      unhighlightText(text);
+    } else {
+      $currentOption.addClass('selected')
+      console.log(text);
+      highlightText(text);
+    }
+  });
+}
+
+function highlightText (text) {
+   chrome.tabs.executeScript({
+      code: "$('body').highlight('"+ text +"');"
+   });
+}
+
+
+function unhighlightText (text) {
+   chrome.tabs.executeScript({
+      code: "$('body').unhighlight('"+ text +"');"
+   });
+}
+
+function highlightAllText() {
+  $('#highlightAll').change(
+    function(){
+      if(this.checked) {
+       $('#dropdown').find('option').each(function(index,element){
+          console.log(index);
+          console.log(element.value);
+          console.log(element.text);
+          highlightText(element.text);
+        });
+      }
+  });
+}
+
+function unhighlightAllText() {
+  $('#unhighlightAll').change(
+    function(){
+      if(this.checked) {
+       $('#dropdown').find('option').each(function(index,element){
+          // console.log(index);
+          // console.log(element.value);
+          // console.log(element.text);
+          unhighlightText(element.text);
+        });
+      }
+  });
+}
+
+function scroll() {
+  
+  
+  $('#next').on('click', function(){
+    chrome.tabs.executeScript({
+        file: "scroll.js"
+    });
+  });
+}
 
 function getUsers () {
-  console.log(userID)
   $.ajax({
     url: 'http://127.0.0.1:3003/api/users/' + userID,
     type: 'GET',
     success: (data) => {
-      console.log(data);
+      console.log('getUser: ', data);
+      allNotes = data;
       renderOption(data);
     },
     error: (data) => {
@@ -16,13 +85,59 @@ function getUsers () {
   });
 };
 
+function button() {
+  $("#button").on("click", function(){
+    //get current tab url 
+    var currentUri;
+
+    chrome.tabs.getSelected(null, (tab) => {
+      currentUri = tab.url;
+    });
+
+    //Get hightlighted text from browser
+    chrome.tabs.executeScript({
+      code: "window.getSelection().toString();"
+    }, (selection) => {
+    
+      var text = selection[0];
+      var note = {name: user, uri: currentUri, note: text};
+      console.log(JSON.stringify(note));
+
+      $.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        url: 'http://127.0.0.1:3003/api/users/notes',
+        data: JSON.stringify(note),
+        success: (data) => {
+          console.log('SUCCESS!');
+          getUsers();
+        },
+        error: (data) => {
+          console.log('Did not receive:' + data);
+        }
+      });
+    });
+  });
+}
+
+function isLoggedIn(token) {
+  // The user is logged in if their token isn't expired
+  return jwt_decode(token).exp > Date.now() / 1000;
+}
+
+function logout() {
+  // Remove the idToken from storage
+  localStorage.clear();
+  main();
+}
+
 function renderOption(data) {
   var $dropdown = $('#dropdown');
   $dropdown.find('option').remove().end();
 
   chrome.tabs.getSelected(null, (tab) => {
-    console.log('data', data);
-    console.log("new", data.urls);
+    console.log('getSelected :', data);
+
     if(data.length !== 0) {
       data[0].urls.forEach(function(url) {
         if(url.name === tab.url) {
@@ -39,67 +154,6 @@ function renderOption(data) {
   });
 }
 
-function optionChange () {
-  $('#dropdown').change(function() {
-    
-    var index = $(this).val();
-    console.log(index)
-    var text = $('#dropdown option[value=' + index + ']').text();
-    console.log(text);
-    highlightText(text);
-  });
-}
-
-function highlightText (text) {
-   chrome.tabs.executeScript({
-      code: "$('body').highlight('"+ text +"');"
-   });
-}
-
-//get current tab url
-function button() {
-    $("#button").on("click", function(){
-    var currentUri;
-
-    chrome.tabs.getSelected(null, (tab) => {
-      currentUri = tab.url;
-    });
-
-    //Get hightlighted text from browser
-    chrome.tabs.executeScript({
-      code: "window.getSelection().toString();"
-    }, (selection) => {
-    
-      var text = selection[0];
-      var fake = {name: user, uri: currentUri, note: text};
-      console.log(JSON.stringify(fake));
-
-      $.ajax({
-        type: 'POST',
-        contentType: 'application/json',
-        url: 'http://127.0.0.1:3003/api/users/notes',
-        data: JSON.stringify(fake),
-        success: (data) => {
-          console.log('SUCCESS!');
-          getUsers();
-        },
-        error: (data) => {
-          console.log('Did not receive:' + data);
-        }
-      });
-    });
-  });
-}
-function isLoggedIn(token) {
-  // The user is logged in if their token isn't expired
-  return jwt_decode(token).exp > Date.now() / 1000;
-}
-
-function logout() {
-  // Remove the idToken from storage
-  localStorage.clear();
-  main();
-}
 
 function renderProfileView(authResult) {
   $('.mainPopup').removeClass('hidden');
@@ -113,14 +167,16 @@ function renderProfileView(authResult) {
   }).then(resp => {
     return resp.json();
   }).then((profile) => {
-    console.log(profile);
     user = profile.email;
     userID = profile.user_id;
     getUsers();
-  });
+
     $('.loading').addClass('hidden');
     $('.note').removeClass('hidden');
     $('.logout-button').get(0).addEventListener('click', logout);
+  });
+
+  
 }
 
 function renderDefaultView() {
@@ -155,7 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
     main();
     button();
     optionChange();
+    highlightAllText();
+    unhighlightAllText();
+    scroll();
   });
 });
-
-// document.addEventListener('DOMContentLoaded', main);

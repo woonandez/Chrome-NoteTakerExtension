@@ -23,11 +23,10 @@
     "persistent": false
   },
   "content_scripts": [
-    // {
-    //   "js": ["jquery-3.2.1.min.js", "jquery.highlight.js"],
-    //   "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-    //   "run_at": "document_end"
-    // }
+    {
+      "js": ["scroll.js"],
+      "matches": ["http://*/*", "https://*/*", "<all_urls>"]
+    }
   ],
   "permissions": [
     "activeTab",
