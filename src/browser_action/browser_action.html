@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="../../jquery-3.2.1.min.js"></script>
+		<!--<link href="https://cdn.auth0.com/styleguide/4.8.12/index.min.css" rel="stylesheet" />-->
+		<link rel="stylesheet" href="http://bootswatch.com/yeti/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../../style.css">
+	</head>
+	<body>
+		<div id="mainPopup hidden">
+			<div class="note hidden">
+				  <div class="container">
+						<div class="loaded">
+							<label>Select a Pin<select id="dropdown"><option>Save a Pin</option value="Save a Pin"></select></label>
+							<div>
+								<button id="button" class="btn btn-success">Save Text</button>
+								<a href="http://127.0.0.1:3003/" class="account" target="_blank">Manage Account</a>
+							</div>
+						</div>
+						<div class="loading">Loading</div>
+					</div>
+					<hr />
+					<button class="btn btn-danger logout-button">Log Out</button>
+				</div>
+			</div>
+			<div class="loading hidden">
+				<div class="loading-bar"></div>
+			  <div class="loading-bar"></div>
+			  <div class="loading-bar"></div>
+			  <div class="loading-bar"></div>
+			</div>
+			<div class="default">
+				<div class="text-center">
+					<h3>Login to Note Taker Extension</h1>
+					<button class="btn btn-danger login-button">Log In With Auth0</button>
+					<p class="caption">Press the Log In button above to log in.</p>
+				</div>
+			</div>
+		</div>
+		<script src="../../env.js"></script>
+		<script src="./browser_action.js"></script>
+		<script src="../../node_modules/jwt-decode/build/jwt-decode.js"></script>
+	</body>
+</html>

@@ -8,18 +8,33 @@
   "browser_action": {
     "icons": ["yummypanguin.png"],
     "default_icon": "yummypanguin.png",
-    "default_popup": "popup.html"
+    "default_popup": "/src/browser_action/browser_action.html"
+  },
+  "background": {
+    "scripts": [
+      "./jquery-3.2.1.min.js",
+      "./env.js",
+      "node_modules/auth0-chrome/dist/auth0chrome.min.js",
+      "src/main.js",
+      "src/browser_action/browser_action.js"
+      // "jquery.highlight.js",
+      // "background.js"
+    ],
+    "persistent": false
   },
   "content_scripts": [
     // {
-    //   "js": ["jquery-3.2.1.min.js", "jquery.highlight.js", "background.js"],
+    //   "js": ["jquery-3.2.1.min.js", "jquery.highlight.js"],
     //   "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-    //   "run_at": "document_start"
+    //   "run_at": "document_end"
     // }
   ],
   "permissions": [
     "activeTab",
     "tabs",
-    "<all_urls>"
+    "<all_urls>",
+    "identity",
+    "notifications",
+    "background"
   ]
 }
