@@ -3,40 +3,47 @@ var userID;
 var allNotes;
 
 var SELECT_VALUE = 'select';
+var ALL_VALUE = 'all';
 
 function optionChange () {
   $('#dropdown').change(function() {
     var value = $(this).val();
+    var changes = {
+      textToHighlight: [],
+      textToUnhighlight: []
+    };
     $('#dropdown').find('option').each(function(index,element){
-      unhighlightText(element.text);
+      if (element.text) {
+        changes.textToUnhighlight.push(element.text);
+      }
     });
 
-    if (value !== SELECT_VALUE) {
+    if (value === ALL_VALUE) {
+      arrayOfText = [];
+      $('#dropdown').find('option').each(function(index,element){
+        if (element.text) {
+          changes.textToHighlight.push(element.text);
+        }
+      });
+    } else if (value !== SELECT_VALUE) {
       var $currentOption = $('#dropdown option[value=' + value + ']');
       var text = $currentOption.text();
-
-      highlightText(text);
+      changes.textToHighlight.push(text);
     }
+
+    commitChanges(changes);
+    chrome.storage.local.set({
+      currentTextIndex: 0
+    });
   });
 }
 
-function highlightText (text) {
+function commitChanges (changes) {
   chrome.storage.local.set({
-    textToHighlight: text
+    changes: changes
   }, function() {
     chrome.tabs.executeScript({
         file: "highlight.js"
-    });
-  })
-}
-
-
-function unhighlightText (text) {
-  chrome.storage.local.set({
-    textToUnhighlight: text
-  }, function() {
-    chrome.tabs.executeScript({
-        file: "unhighlight.js"
     });
   })
 }
@@ -119,6 +126,10 @@ function renderOption(data) {
     $dropdown.append($("<option/>", {
       label: "--Select--",
       value: SELECT_VALUE
+    }));
+    $dropdown.append($("<option/>", {
+      label: "--All--",
+      value: ALL_VALUE
     }));
 
     if(data.length !== 0) {
