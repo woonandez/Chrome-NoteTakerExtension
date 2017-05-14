@@ -1,0 +1,23 @@
+{
+  "name": "noted",
+  "version": "1.0.0",
+  "description": "",
+  "main": "env.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Knguy47/Chrome-NoteTakerExtension.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Knguy47/Chrome-NoteTakerExtension/issues"
+  },
+  "homepage": "https://github.com/Knguy47/Chrome-NoteTakerExtension#readme",
+  "dependencies": {
+    "auth0-chrome": "^0.1.2",
+    "jwt-decode": "^2.2.0"
+  }
+}

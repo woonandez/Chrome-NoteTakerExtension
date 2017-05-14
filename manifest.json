@@ -23,14 +23,11 @@
     "persistent": false
   },
   "content_scripts": [
-    {
-      "js": ["scroll.js"],
-      "matches": ["http://*/*", "https://*/*", "<all_urls>"]
-    }
   ],
   "permissions": [
     "activeTab",
     "tabs",
+    "storage",
     "<all_urls>",
     "identity",
     "notifications",

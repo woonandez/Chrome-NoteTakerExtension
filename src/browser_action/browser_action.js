@@ -2,67 +2,53 @@ var user;
 var userID;
 var allNotes;
 
+var SELECT_VALUE = 'select';
+var ALL_VALUE = 'all';
+
 function optionChange () {
   $('#dropdown').change(function() {
-    var index = $(this).val();
-    var $currentOption = $('#dropdown option[value=' + index + ']');
-    var text = $currentOption.text();
+    var value = $(this).val();
+    var changes = {
+      textToHighlight: [],
+      textToUnhighlight: []
+    };
+    $('#dropdown').find('option').each(function(index,element){
+      if (element.text) {
+        changes.textToUnhighlight.push(element.text);
+      }
+    });
 
-    if($currentOption.hasClass('selected')) {
-      $currentOption.removeClass('selected');
-      unhighlightText(text);
-    } else {
-      $currentOption.addClass('selected')
-      console.log(text);
-      highlightText(text);
+    if (value === ALL_VALUE) {
+      arrayOfText = [];
+      $('#dropdown').find('option').each(function(index,element){
+        if (element.text) {
+          changes.textToHighlight.push(element.text);
+        }
+      });
+    } else if (value !== SELECT_VALUE) {
+      var $currentOption = $('#dropdown option[value=' + value + ']');
+      var text = $currentOption.text();
+      changes.textToHighlight.push(text);
     }
+
+    commitChanges(changes);
+    chrome.storage.local.set({
+      currentTextIndex: 0
+    });
   });
 }
 
-function highlightText (text) {
-   chrome.tabs.executeScript({
-      code: "$('body').highlight('"+ text +"');"
-   });
-}
-
-
-function unhighlightText (text) {
-   chrome.tabs.executeScript({
-      code: "$('body').unhighlight('"+ text +"');"
-   });
-}
-
-function highlightAllText() {
-  $('#highlightAll').change(
-    function(){
-      if(this.checked) {
-       $('#dropdown').find('option').each(function(index,element){
-          console.log(index);
-          console.log(element.value);
-          console.log(element.text);
-          highlightText(element.text);
-        });
-      }
-  });
-}
-
-function unhighlightAllText() {
-  $('#unhighlightAll').change(
-    function(){
-      if(this.checked) {
-       $('#dropdown').find('option').each(function(index,element){
-          // console.log(index);
-          // console.log(element.value);
-          // console.log(element.text);
-          unhighlightText(element.text);
-        });
-      }
-  });
+function commitChanges (changes) {
+  chrome.storage.local.set({
+    changes: changes
+  }, function() {
+    chrome.tabs.executeScript({
+        file: "highlight.js"
+    });
+  })
 }
 
 function scroll() {
-  
-  
   $('#next').on('click', function(){
     chrome.tabs.executeScript({
         file: "scroll.js"
@@ -137,13 +123,21 @@ function renderOption(data) {
 
   chrome.tabs.getSelected(null, (tab) => {
     console.log('getSelected :', data);
+    $dropdown.append($("<option/>", {
+      label: "--Select--",
+      value: SELECT_VALUE
+    }));
+    $dropdown.append($("<option/>", {
+      label: "--All--",
+      value: ALL_VALUE
+    }));
 
     if(data.length !== 0) {
       data[0].urls.forEach(function(url) {
         if(url.name === tab.url) {
           url.pins.forEach(function(note, index) {
             $dropdown.append($("<option/>", {
-              label: `Pin ${index}: ${note.slice(0, 15)}...`,
+              label: `Pin ${index + 1}: ${note.slice(0, 15)}...`,
               value: index,
               text: note
             }));
@@ -211,8 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
     main();
     button();
     optionChange();
-    highlightAllText();
-    unhighlightAllText();
     scroll();
   });
 });
