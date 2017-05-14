@@ -1,8 +1,11 @@
-console.log($('span.highlight').first());
-console.log($('span.highlight').parent());
-    $('body').animate({
-          scrollTop: $('span.highlight').offset().top     
-        }, 1000);
+var element = $('span.highlight');
+if (element.length !== 0) {
+  console.log($('span.highlight').first());
+  console.log($('span.highlight').parent());
+  $('body').animate({
+    scrollTop: $('span.highlight').offset().top     
+  }, 1000);
+}
 
 // jQuery(function($) {
   

@@ -2,62 +2,54 @@ var user;
 var userID;
 var allNotes;
 
+var SELECT_VALUE = 'select';
+
 function optionChange () {
   $('#dropdown').change(function() {
-    var index = $(this).val();
-    var $currentOption = $('#dropdown option[value=' + index + ']');
-    var text = $currentOption.text();
-
-    if($currentOption.hasClass('selected')) {
-      $currentOption.removeClass('selected');
-      unhighlightText(text);
-    } else {
-      $currentOption.addClass('selected')
-      console.log(text);
-      highlightText(text);
-    }
-  });
-}
-
-function highlightText (text) {
-   chrome.tabs.executeScript({
-      code: "$('body').highlight('"+ text +"');"
-   });
-}
-
-
-function unhighlightText (text) {
-   chrome.tabs.executeScript({
-      code: "$('body').unhighlight('"+ text +"');"
-   });
-}
-
-function highlightAllText() {
-  $('#highlightAll').change(
-    function(){
-      if(this.checked) {
-       $('#dropdown').find('option').each(function(index,element){
-          console.log(index);
-          console.log(element.value);
-          console.log(element.text);
-          highlightText(element.text);
-        });
-      }
-  });
-}
-
-function unhighlightAllText() {
-  $('#unhighlightAll').change(
-    function(){
-      if(this.checked) {
+    var value = $(this).val();
+    debugger;
+    if (value === SELECT_VALUE) {
        $('#dropdown').find('option').each(function(index,element){
           // console.log(index);
           // console.log(element.value);
           // console.log(element.text);
           unhighlightText(element.text);
         });
+    } else {
+      var $currentOption = $('#dropdown option[value=' + value + ']');
+      var text = $currentOption.text();
+
+      if($currentOption.hasClass('selected')) {
+        $currentOption.removeClass('selected');
+        unhighlightText(text);
+      } else {
+        $currentOption.addClass('selected')
+        console.log(text);
+        highlightText(text);
       }
+    }
   });
+}
+
+function highlightText (text) {
+  chrome.storage.local.set({
+    textToHighlight: text
+  }, function() {
+    chrome.tabs.executeScript({
+        file: "highlight.js"
+    });
+  })
+}
+
+
+function unhighlightText (text) {
+  chrome.storage.local.set({
+    textToUnhighlight: text
+  }, function() {
+    chrome.tabs.executeScript({
+        file: "unhighlight.js"
+    });
+  })
 }
 
 function scroll() {
@@ -137,13 +129,17 @@ function renderOption(data) {
 
   chrome.tabs.getSelected(null, (tab) => {
     console.log('getSelected :', data);
+    $dropdown.append($("<option/>", {
+      label: "--Select--",
+      value: SELECT_VALUE
+    }));
 
     if(data.length !== 0) {
       data[0].urls.forEach(function(url) {
         if(url.name === tab.url) {
           url.pins.forEach(function(note, index) {
             $dropdown.append($("<option/>", {
-              label: `Pin ${index}: ${note.slice(0, 15)}...`,
+              label: `Pin ${index + 1}: ${note.slice(0, 15)}...`,
               value: index,
               text: note
             }));
@@ -211,8 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
     main();
     button();
     optionChange();
-    highlightAllText();
-    unhighlightAllText();
     scroll();
   });
 });
