@@ -7,26 +7,15 @@ var SELECT_VALUE = 'select';
 function optionChange () {
   $('#dropdown').change(function() {
     var value = $(this).val();
-    debugger;
-    if (value === SELECT_VALUE) {
-       $('#dropdown').find('option').each(function(index,element){
-          // console.log(index);
-          // console.log(element.value);
-          // console.log(element.text);
-          unhighlightText(element.text);
-        });
-    } else {
+    $('#dropdown').find('option').each(function(index,element){
+      unhighlightText(element.text);
+    });
+
+    if (value !== SELECT_VALUE) {
       var $currentOption = $('#dropdown option[value=' + value + ']');
       var text = $currentOption.text();
 
-      if($currentOption.hasClass('selected')) {
-        $currentOption.removeClass('selected');
-        unhighlightText(text);
-      } else {
-        $currentOption.addClass('selected')
-        console.log(text);
-        highlightText(text);
-      }
+      highlightText(text);
     }
   });
 }
@@ -53,8 +42,6 @@ function unhighlightText (text) {
 }
 
 function scroll() {
-  
-  
   $('#next').on('click', function(){
     chrome.tabs.executeScript({
         file: "scroll.js"
