@@ -177,6 +177,7 @@ function renderDefaultView() {
   $('.default').removeClass('hidden');
   $('.note').addClass('hidden');
   $('.loading').addClass('hidden');
+
   $('.login-button').get(0).addEventListener('click', () => {
   $('.default').addClass('hidden');
   $('.loading').removeClass('hidden');
