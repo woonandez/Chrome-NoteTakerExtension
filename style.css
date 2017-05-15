@@ -74,7 +74,7 @@ html, body{
 }
 
 .logout-button {
-  margin-bottom: 15px !important;
+  margin-bottom: 10px !important;
 }
 
 .login-button {
@@ -85,10 +85,16 @@ html, body{
   color: #fff;
 }
 
-#button{
-  float: left
-}
-
 label {
     display: inline;
+}
+
+p {
+  font-size: 12px;
+  margin: 8px .5px 4.5px;
+}
+
+.container2{
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
