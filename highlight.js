@@ -4,6 +4,7 @@ chrome.storage.local.get('changes', function(results) {
   changes.textToUnhighlight.forEach((value) => {
     $('body').unhighlight(value);
   });
+  
   changes.textToHighlight.forEach((value) => {
     $('body').highlight(value);
   });

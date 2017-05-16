@@ -5,6 +5,7 @@ var allNotes;
 var SELECT_VALUE = 'select';
 var ALL_VALUE = 'all';
 
+//Load event listener for dropdown
 function optionChange () {
   $('#dropdown').change(function() {
     var value = $(this).val();
@@ -12,12 +13,15 @@ function optionChange () {
       textToHighlight: [],
       textToUnhighlight: []
     };
+    
+    //unHighlight all notes
     $('#dropdown').find('option').each(function(index,element){
       if (element.text) {
         changes.textToUnhighlight.push(element.text);
       }
     });
 
+    //If selecting --all-- in dropdown
     if (value === ALL_VALUE) {
       arrayOfText = [];
       $('#dropdown').find('option').each(function(index,element){
@@ -25,19 +29,24 @@ function optionChange () {
           changes.textToHighlight.push(element.text);
         }
       });
-    } else if (value !== SELECT_VALUE) {
+    } //If selecting anything, but --select--
+    else if (value !== SELECT_VALUE) {
       var $currentOption = $('#dropdown option[value=' + value + ']');
       var text = $currentOption.text();
       changes.textToHighlight.push(text);
     }
-
+    
+    //Send object of text to highlight
     commitChanges(changes);
+    
+    //Set currentTextIndex back to 0
     chrome.storage.local.set({
       currentTextIndex: 0
     });
   });
 }
 
+//Set a change object on chrome local storage
 function commitChanges (changes) {
   chrome.storage.local.set({
     changes: changes
@@ -48,6 +57,7 @@ function commitChanges (changes) {
   })
 }
 
+//Load event listner for Scroll Button
 function scroll() {
   $('#next').on('click', function(){
     chrome.tabs.executeScript({
@@ -56,12 +66,12 @@ function scroll() {
   });
 }
 
+//Make call to server to get User
 function getUsers () {
   $.ajax({
-    url: 'http://127.0.0.1:3003/api/users/' + userID,
+    url: 'https://noteextension.herokuapp.com/api/users/' + userID,
     type: 'GET',
     success: (data) => {
-      console.log('getUser: ', data);
       allNotes = data;
       renderOption(data);
     },
@@ -71,11 +81,12 @@ function getUsers () {
   });
 };
 
+//Load event listner for "Noted" button
 function button() {
   $("#button").on("click", function(){
-    //get current tab url 
     var currentUri;
 
+    //Get current tab url 
     chrome.tabs.getSelected(null, (tab) => {
       currentUri = tab.url;
     });
@@ -87,12 +98,11 @@ function button() {
     
       var text = selection[0];
       var note = {name: user, uri: currentUri, note: text};
-      console.log(JSON.stringify(note));
 
       $.ajax({
         type: 'POST',
         contentType: 'application/json',
-        url: 'http://127.0.0.1:3003/api/users/notes',
+        url: 'https://noteextension.herokuapp.com/api/users/notes',
         data: JSON.stringify(note),
         success: (data) => {
           console.log('SUCCESS!');
@@ -106,17 +116,20 @@ function button() {
   });
 }
 
+//Checks if user is login for Auth0
 function isLoggedIn(token) {
   // The user is logged in if their token isn't expired
   return jwt_decode(token).exp > Date.now() / 1000;
 }
 
+//Log out user by clearing the local storage
 function logout() {
   // Remove the idToken from storage
   localStorage.clear();
   main();
 }
 
+//Render drop downlist
 function renderOption(data) {
   var $dropdown = $('#dropdown');
   $dropdown.find('option').remove().end();
@@ -127,6 +140,7 @@ function renderOption(data) {
       label: "--Select--",
       value: SELECT_VALUE
     }));
+    
     $dropdown.append($("<option/>", {
       label: "--All--",
       value: ALL_VALUE
@@ -148,7 +162,7 @@ function renderOption(data) {
   });
 }
 
-
+//Render the Main App
 function renderProfileView(authResult) {
   $('.mainPopup').removeClass('hidden');
   $('.default').addClass('hidden');
@@ -169,10 +183,9 @@ function renderProfileView(authResult) {
     $('.note').removeClass('hidden');
     $('.logout-button').get(0).addEventListener('click', logout);
   });
-
-  
 }
 
+//Render the login page
 function renderDefaultView() {
   $('.default').removeClass('hidden');
   $('.note').addClass('hidden');
@@ -181,15 +194,18 @@ function renderDefaultView() {
   $('.login-button').get(0).addEventListener('click', () => {
   $('.default').addClass('hidden');
   $('.loading').removeClass('hidden');
-    chrome.runtime.sendMessage({
+  
+  chrome.runtime.sendMessage({
       type: "authenticate"
     });
   });
 }
 
+//Check if user logged in
 function main () {
   const authResult = JSON.parse(localStorage.authResult || '{}');
   const token = authResult.id_token;
+
   if (token && isLoggedIn(token)) {
     renderProfileView(authResult);
   } else {
@@ -197,11 +213,13 @@ function main () {
   }
 }
 
+//Injects Jquery, Jquery.highlight, and CSS into current tab
 document.addEventListener("DOMContentLoaded", () => {
   var result = chrome.tabs.executeScript(null, {file: "jquery-3.2.1.min.js"});
   var result2 = chrome.tabs.executeScript(null, {file: "jquery.highlight.js"});
   chrome.tabs.insertCSS(null, {file:"noteTakerHighlight.css"});
 
+//Run event listeners
   Promise.all([result, result2]).then(() => {
     main();
     button();

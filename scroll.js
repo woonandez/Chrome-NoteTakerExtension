@@ -1,6 +1,7 @@
 chrome.storage.local.get('currentTextIndex', function(results) {
-  results = results.currentTextIndex ? results.currentTextIndex : 0;
   var element = $('span.highlight');
+  results = results.currentTextIndex ? results.currentTextIndex : 0;
+
   if (element.length !== 0) {
     $('body').animate({
       scrollTop: element.eq(results).offset().top     
