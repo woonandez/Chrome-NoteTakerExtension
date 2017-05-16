@@ -17,13 +17,9 @@
       "node_modules/auth0-chrome/dist/auth0chrome.min.js",
       "src/main.js",
       "src/browser_action/browser_action.js"
-      // "jquery.highlight.js",
-      // "background.js"
     ],
     "persistent": false
   },
-  "content_scripts": [
-  ],
   "permissions": [
     "activeTab",
     "tabs",

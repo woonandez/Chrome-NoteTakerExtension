@@ -98,3 +98,7 @@ p {
   flex-direction: row;
   flex-wrap: nowrap;
 }
+
+.penguin{
+  height: 30px;
+}
