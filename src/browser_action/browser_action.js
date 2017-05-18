@@ -69,7 +69,11 @@ function scroll() {
 //Make call to server to get User
 function getUsers () {
   $.ajax({
+<<<<<<< HEAD
     url: 'http://aqueous-falls-23719.herokuapp.com/' + userID,
+=======
+    url: `${env.URL}${userID}`,
+>>>>>>> 16ecfd9ab34d61753bd3bd301ef59f079592cd2a
     type: 'GET',
     success: (data) => {
       allNotes = data;
@@ -102,7 +106,11 @@ function button() {
       $.ajax({
         type: 'POST',
         contentType: 'application/json',
+<<<<<<< HEAD
         url: 'http://aqueous-falls-23719.herokuapp.com/',
+=======
+        url: `${env.URL}notes`,
+>>>>>>> 16ecfd9ab34d61753bd3bd301ef59f079592cd2a
         data: JSON.stringify(note),
         success: (data) => {
           console.log('SUCCESS!');
