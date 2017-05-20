@@ -1,6 +1,7 @@
 var user;
 var userID;
 var allNotes;
+var currentUri;
 
 var SELECT_VALUE = 'select';
 var ALL_VALUE = 'all';
@@ -23,7 +24,6 @@ function optionChange () {
 
     //If selecting --all-- in dropdown
     if (value === ALL_VALUE) {
-      arrayOfText = [];
       $('#dropdown').find('option').each(function(index,element){
         if (element.text) {
           changes.textToHighlight.push(element.text);
@@ -47,7 +47,7 @@ function optionChange () {
 }
 
 //Set a change object on chrome local storage
-function commitChanges (changes) {
+function commitChanges(changes) {
   chrome.storage.local.set({
     changes: changes
   }, function() {
@@ -82,11 +82,10 @@ function getUsers () {
 };
 
 //Load event listner for "Noted" button
-function button() {
-  $("#button").on("click", function(){
+function notedButton() {
+  $("#noted").on("click", function() {
     var currentUri;
 
-    //Get current tab url
     chrome.tabs.getSelected(null, (tab) => {
       currentUri = tab.url;
     });
@@ -135,7 +134,6 @@ function renderOption(data) {
   $dropdown.find('option').remove().end();
 
   chrome.tabs.getSelected(null, (tab) => {
-    console.log('getSelected :', data);
     $dropdown.append($("<option/>", {
       label: "--Select--",
       value: SELECT_VALUE
@@ -192,18 +190,45 @@ function renderDefaultView() {
   $('.loading').addClass('hidden');
 
   $('.login-button').get(0).addEventListener('click', () => {
-  $('.default').addClass('hidden');
-  $('.loading').removeClass('hidden');
+    $('.default').addClass('hidden');
+    $('.loading').removeClass('hidden');
 
-  chrome.runtime.sendMessage({
-      type: "authenticate"
+    chrome.runtime.sendMessage({
+        type: "authenticate"
     });
   });
 }
 
-//Check if user logged in
-function main () {
-  const authResult = JSON.parse(localStorage.authResult || '{}');
+// Annotations function
+
+
+//Injects Jquery, Jquery.highlight, and CSS into current tab
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    if (request.greeting == "hello")
+      sendResponse({farewell: "goodbye"});
+  }
+);
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.init === 'init') {
+      var authResult = JSON.parse(localStorage.authResult || '{}');
+      var currentUri = sender.tab.url;
+      sendResponse({
+        url: currentUri,
+        authResult: authResult
+      });
+    }
+  }
+);
+
+document.addEventListener("DOMContentLoaded", () => {
+  var authResult = JSON.parse(localStorage.authResult || '{}');
   const token = authResult.id_token;
 
   if (token && isLoggedIn(token)) {
@@ -211,19 +236,11 @@ function main () {
   } else {
     renderDefaultView();
   }
-}
 
-//Injects Jquery, Jquery.highlight, and CSS into current tab
-document.addEventListener("DOMContentLoaded", () => {
-  var result = chrome.tabs.executeScript(null, {file: "jquery-3.2.1.min.js"});
-  var result2 = chrome.tabs.executeScript(null, {file: "jquery.highlight.js"});
-  chrome.tabs.insertCSS(null, {file:"noteTakerHighlight.css"});
+  notedButton();
+  optionChange();
+  scroll();
 
-//Run event listeners
-  Promise.all([result, result2]).then(() => {
-    main();
-    button();
-    optionChange();
-    scroll();
-  });
+
+
 });
