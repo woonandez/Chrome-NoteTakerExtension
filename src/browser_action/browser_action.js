@@ -3,6 +3,10 @@ var userID;
 var allNotes;
 var currentUri;
 
+chrome.tabs.getSelected(null, (tab) => {
+  currentUri = tab.url;
+});
+
 var SELECT_VALUE = 'select';
 var ALL_VALUE = 'all';
 
@@ -37,7 +41,7 @@ function optionChange () {
     }
 
     //Send object of text to highlight
-    commitChanges(changes);
+    commitChanges(changes, userID, currentUri);
 
     //Set currentTextIndex back to 0
     chrome.storage.local.set({
@@ -47,11 +51,10 @@ function optionChange () {
 }
 
 //Set a change object on chrome local storage
-function commitChanges(changes) {
+function commitChanges(changes, userID, currentUri) {
+  console.log(changes);
   chrome.storage.local.set({
-    changes: changes,
-    userID: userID,
-    url: currentUri
+    'changes': {'changes': changes, 'userID': userID, 'url': currentUri}
   }, function() {
     chrome.tabs.executeScript({
       file: "highlight.js"
@@ -63,7 +66,7 @@ function commitChanges(changes) {
 function scroll() {
   $('#next').on('click', function(){
     chrome.tabs.executeScript({
-        file: "scroll.js"
+      file: "scroll.js"
     });
   });
 }
@@ -85,11 +88,6 @@ function getUsers () {
 //Load event listner for "Noted" button
 function notedButton() {
   $("#addNote").on("click", function() {
-    var currentUri;
-
-    chrome.tabs.getSelected(null, (tab) => {
-      currentUri = tab.url;
-    });
 
     //Get hightlighted text from browser
     chrome.tabs.executeScript({
@@ -199,9 +197,6 @@ function renderDefaultView() {
     });
   });
 }
-
-// Annotations function
-
 
 //Injects Jquery, Jquery.highlight, and CSS into current tab
 
