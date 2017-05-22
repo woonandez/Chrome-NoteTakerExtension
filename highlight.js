@@ -2,8 +2,10 @@ chrome.storage.local.get('changes', function(results) {
   var changes = results.changes.changes;
   var userID = results.changes.userID;
   var tab = results.changes.url;
-  var URL = 'http://127.0.0.1:3003/api/users/';
-  console.log(changes);
+  var URL = 'https://study-buddy-.herokuapp.com/api/users/';
+
+  $('body').find('.annotations').remove();
+  $('body').find('span.annotate').removeClass('annotate').addClass('annotate');
 
   changes.textToUnhighlight.forEach((value) => {
     $('body').unhighlight(value);
@@ -12,10 +14,6 @@ chrome.storage.local.get('changes', function(results) {
   changes.textToHighlight.forEach((value) => {
     $('body').highlight(value);
   });
-
-  $('body').find('.annotate').remove();
-  $('body').append(`<h1 class="annotate">Test</h1>`);
-
 
   $('.highlightAnnotations').on('click', function() {
     if ( $(this).hasClass("highlightAnnotations") ) {
@@ -60,7 +58,6 @@ function findAnnotations(container, userID, tabUrl, content) {
     url: `${URL}${userID}`,
     type: 'GET',
     success: (data) => {
-      console.log(data);
       if(data.length !== 0) {
         data[0].urls.forEach(function(url) {
           if (url.name === tabUrl) {
