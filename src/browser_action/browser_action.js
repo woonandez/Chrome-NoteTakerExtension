@@ -49,10 +49,12 @@ function optionChange () {
 //Set a change object on chrome local storage
 function commitChanges(changes) {
   chrome.storage.local.set({
-    changes: changes
+    changes: changes,
+    userID: userID,
+    url: currentUri
   }, function() {
     chrome.tabs.executeScript({
-        file: "highlight.js"
+      file: "highlight.js"
     });
   })
 }
@@ -72,7 +74,6 @@ function getUsers () {
     url: `${env.URL}${userID}`,
     type: 'GET',
     success: (data) => {
-      allNotes = data;
       renderOption(data);
     },
     error: (data) => {
@@ -149,9 +150,9 @@ function renderOption(data) {
         if(url.name === tab.url) {
           url.pins.forEach(function(note, index) {
             $dropdown.append($("<option/>", {
-              label: `Pin ${index + 1}: ${note.slice(0, 15)}...`,
+              label: `Pin ${index + 1}: ${note.content.slice(0, 15)}...`,
               value: index,
-              text: note
+              text: note.content
             }));
           });
         }
@@ -206,21 +207,11 @@ function renderDefaultView() {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
-    if (request.greeting == "hello")
-      sendResponse({farewell: "goodbye"});
-  }
-);
-
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
     if (request.init === 'init') {
       var authResult = JSON.parse(localStorage.authResult || '{}');
-      var currentUri = sender.tab.url;
+      var senderUri = sender.tab.url;
       sendResponse({
-        url: currentUri,
+        url: senderUri,
         authResult: authResult
       });
     }
@@ -240,7 +231,5 @@ document.addEventListener("DOMContentLoaded", () => {
   notedButton();
   optionChange();
   scroll();
-
-
 
 });
