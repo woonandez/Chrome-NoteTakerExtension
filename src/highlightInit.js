@@ -10,7 +10,7 @@ function findAnnotations(container, userID, tabUrl, content) {
       if(data.length !== 0) {
         data[0].urls.forEach(function(url) {
           if(url.name === tabUrl && url.pins.content === content) {
-            container.after(url.pins.annotation);
+            container.after(url.pins.annotations);
           }
         });
       }
