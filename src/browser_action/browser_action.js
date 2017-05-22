@@ -84,7 +84,7 @@ function getUsers () {
 
 //Load event listner for "Noted" button
 function notedButton() {
-  $("#noted").on("click", function() {
+  $("#addNote").on("click", function() {
     var currentUri;
 
     chrome.tabs.getSelected(null, (tab) => {

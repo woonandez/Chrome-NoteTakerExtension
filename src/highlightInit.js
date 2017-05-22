@@ -1,34 +1,26 @@
 var AUTH0_DOMAIN = 'xosk.auth0.com';
 var AUTH0_CLIENT_ID = 'gLvvvwQlgFMIhedyBZDIjsGrb1Oa47oZ';
-var URL = 'http://localhost:3003/api/users/';
+var URL = 'http://127.0.0.1:3003/api/users/';
 
-function findAnnotations(container, userID, url) {
+function findAnnotations(container, userID, tabUrl, content) {
   $.ajax({
     url: `${URL}${userID}`,
     type: 'GET',
     success: (data) => {
-
       if(data.length !== 0) {
         data[0].urls.forEach(function(url) {
-          if(url.name === tab.url) {
-            url.pins.forEach(function(note, index) {
-              $dropdown.append($("<option/>", {
-                label: `Pin ${index + 1}: ${note.slice(0, 15)}...`,
-                value: index,
-                text: note
-              }));
-            });
+          if(url.name === tabUrl && url.pins.content === content) {
+            container.after(url.pins.annotation);
           }
         });
       }
-
     }
   });
 }
 
-function postAnnotation(annotation, userID, url) {
+function postAnnotation(annotation, userID, url, content) {
   // Ajax call to annotations
-  var annotationData = { 'name': userID, 'url': url, 'annotation': JSON.stringify(annotation) };
+  var annotationData = { 'name': userID, 'uri': url, 'annotation': annotation, 'note': content };
 
   $.ajax({
     url: `${URL}annotations`,
@@ -70,7 +62,7 @@ chrome.runtime.sendMessage({init: "init"}, function(response) {
           data[0].urls.forEach(function(url) {
             if(url.name === tab) {
               url.pins.forEach(function(note) {
-                $('body').highlight(note);
+                $('body').highlight(note.content);
               });
             }
           });
@@ -80,6 +72,7 @@ chrome.runtime.sendMessage({init: "init"}, function(response) {
         $('.highlightAnnotations').on('click', function() {
           if ( $(this).hasClass("highlightAnnotations") ) {
             var span = $(this);
+            var pinContent = span.html();
             $(this).removeClass('highlightAnnotations');
             $(this).addClass('annotate');
             var elementPositionTop = $(this).offset().top;
@@ -93,13 +86,13 @@ chrome.runtime.sendMessage({init: "init"}, function(response) {
             $(this).prepend(annotationDiv);
 
             // Add annotations to annotation container
-            findAnnotations(($(this).find('.annotation')), userID, tab);
+            findAnnotations(($(this).find('form'), userID, tab, pinContent);
 
             // Create Annotations
             $(this).find('form').on('submit', function(event) {
               event.preventDefault();
               // Send annotation to database
-              var annotation = postAnnotation(($(this).find('textarea').val()), userID, tab);
+              var annotation = postAnnotation(($(this).find('textarea').val()), userID, tab, pinContent);
               $(this).after(annotation);
             });
 
