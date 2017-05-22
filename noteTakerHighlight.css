@@ -1,13 +1,13 @@
 .highlightAnnotations {
-  background-color: yellow;
+  background-color: #f7ec6f;
 }
 
 .highlightAnnotations:hover {
-  background-color: green;
+  background-color: #dbd162;
 }
 
 .annotate {
-  background-color: red;
+  background-color: #dbd162;
 }
 
 .annotations {
