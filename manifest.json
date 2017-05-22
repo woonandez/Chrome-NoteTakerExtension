@@ -1,19 +1,29 @@
 {
   "manifest_version": 2,
 
-  "name": "Noted",
-  "description": "This extension saves notes to a database for any url",
-  "version": "1.0",
+  "name": "Study Buddy",
+  "description": "Keep your notes and annotations organized for the webpages you're studying!",
+  "version": "0.1",
 
   "browser_action": {
     "icons": ["yummypanguin.png"],
     "default_icon": "yummypanguin.png",
     "default_popup": "/src/browser_action/browser_action.html"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "css": ["noteTakerHighlight.css"],
+      "js": ["jquery-3.2.1.min.js", "jquery.highlight.js", "src/highlightInit.js"]
+    }
+  ],
   "background": {
     "scripts": [
-      "./jquery-3.2.1.min.js",
-      "./env.js",
+      "jquery-3.2.1.min.js",
+      "jquery.highlight.js",
+      "env.js",
       "node_modules/auth0-chrome/dist/auth0chrome.min.js",
       "src/main.js",
       "src/browser_action/browser_action.js"
@@ -22,7 +32,6 @@
   },
   "permissions": [
     "activeTab",
-    "tabs",
     "storage",
     "<all_urls>",
     "identity",

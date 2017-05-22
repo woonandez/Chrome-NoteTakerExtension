@@ -1,3 +1,7 @@
-.highlight{
+.highlightAnnotations {
   background-color: yellow;
+}
+
+.highlightAnnotations:hover {
+  background-color: green;
 }
