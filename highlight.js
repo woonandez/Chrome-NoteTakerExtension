@@ -2,7 +2,7 @@ chrome.storage.local.get('changes', function(results) {
   var changes = results.changes.changes;
   var userID = results.changes.userID;
   var tab = results.changes.url;
-  var URL = 'https://study-buddy-.herokuapp.com/api/users/';
+  var URL = 'http://127.0.0.1:3003/api/users/';
 
   $('body').find('.annotations').remove();
   $('body').find('span.annotate').removeClass('annotate').addClass('annotate');
