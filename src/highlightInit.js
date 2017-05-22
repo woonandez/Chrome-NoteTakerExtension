@@ -9,8 +9,15 @@ function findAnnotations(container, userID, tabUrl, content) {
     success: (data) => {
       if(data.length !== 0) {
         data[0].urls.forEach(function(url) {
-          if(url.name === tabUrl && url.pins.content === content) {
-            container.after(url.pins.annotations);
+          if (url.name === tabUrl) {
+            url.pins.forEach( (pin) => {
+              if ( pin.content === content ) {
+                pin.annotations.forEach((annotation) => {
+                  var newAnnotation = $('<div>').addClass('annotation').text(annotation);
+                  container.after(newAnnotation);
+                });
+              }
+            });
           }
         });
       }
@@ -20,7 +27,7 @@ function findAnnotations(container, userID, tabUrl, content) {
 
 function postAnnotation(annotation, userID, url, content) {
   // Ajax call to annotations
-  var annotationData = { 'name': userID, 'uri': url, 'annotation': annotation, 'note': content };
+  var annotationData = JSON.stringify({ 'name': userID, 'uri': url, 'annotation': annotation, 'note': content });
 
   $.ajax({
     url: `${URL}annotations`,
@@ -34,7 +41,6 @@ function postAnnotation(annotation, userID, url, content) {
       console.log('Did not receive:', data)
     }
   });
-
 
   return $('<div>').text(annotation);
 }
@@ -78,7 +84,7 @@ chrome.runtime.sendMessage({init: "init"}, function(response) {
             var elementPositionTop = $(this).offset().top;
             var elementPositionLeft = $(this).offset().left;
 
-            var annotationDiv = $('<div class="annotation"><form><textarea row="1" col="20"></textarea><input type="submit" value="Submit"><button class="exit">Exit</button></form><br></div>')
+            var annotationDiv = $('<div class="annotations"><form><textarea row="1" col="20"></textarea><input type="submit" value="Submit"><button class="exit">Exit</button></form><br></div>')
             annotationDiv.css({
               'top': elementPositionTop,
               'left': elementPositionLeft
@@ -86,7 +92,7 @@ chrome.runtime.sendMessage({init: "init"}, function(response) {
             $(this).prepend(annotationDiv);
 
             // Add annotations to annotation container
-            findAnnotations(($(this).find('form'), userID, tab, pinContent);
+            findAnnotations(($(this).find('form')), userID, tab, pinContent);
 
             // Create Annotations
             $(this).find('form').on('submit', function(event) {
