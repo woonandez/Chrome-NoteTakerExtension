@@ -12,27 +12,23 @@
 		<div class="note hidden">
 			<div class="container text-center">
 				<div class="loaded">
-					<label>Select a saved Note<select id="dropdown">
-						<option>
-							Save a Pin
+					<select id="dropdown">
+						<option selected disabled>
+							Highlights
 						</option>
-					</select></label>
+					</select>
 					<div class="container2">
-						<p>Highlight text and Note it</p>
-						<button class="btn btn-success" id="button">NOTED</button>
-						<p>Scroll through highlighted notes</p>
-						<button class="btn" id="next">Scroll to Note</button>
-						<hr>
-						<a class="account" href="http://127.0.0.1:3003/" target="_blank">Manage Account</a>
+						<button class="btn save-btn" id="button">Save</button>
+						<button class="btn find-btn" id="next">Find</button>
 					</div>
 				</div>
 				<div class="loading">
 					Loading
 				</div>
 			</div>
-			<hr>
 			<div class="text-center">
-				<button class="btn btn-danger logout-button">Log Out</button>
+				<a class="account" href="http://127.0.0.1:3003/" target="_blank"><button class="btn manage-btn">Manage Account</button></a>
+				<button class="btn logout-button">Logout</button>
 			</div>
 		</div>
 	</div>
@@ -51,8 +47,8 @@
 			<p class="caption">Press the Log In button above to log in.</p>
 		</div>
 	</div>
-	<script src="../../env.js"></script> 
-	<script src="./browser_action.js"></script> 
+	<script src="../../env.js"></script>
+	<script src="./browser_action.js"></script>
 	<script src="../../node_modules/jwt-decode/build/jwt-decode.js"></script>
 </body>
 </html>
